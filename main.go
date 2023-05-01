@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"time"
@@ -72,8 +74,25 @@ func (p *program) Init(env svc.Environment) error {
 
 func (p *program) Start() error {
 	log.Printf("Starting...\n")
+
+	// Create a new Goroutine to run the server
+	go startHTTPServer()
+
 	go p.svr.start()
 	return nil
+}
+
+func startHTTPServer() {
+	// Define the HTTP handler function
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "ok")
+	})
+
+	// Start the HTTP server on port 9001
+	err := http.ListenAndServe(":9001", nil)
+	if err != nil {
+		fmt.Println("Failed to start HTTP server on port 9001:", err)
+	}
 }
 
 func (p *program) Stop() error {
