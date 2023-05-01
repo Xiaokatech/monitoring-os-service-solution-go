@@ -75,10 +75,31 @@ func (p *program) Init(env svc.Environment) error {
 func (p *program) Start() error {
 	log.Printf("Starting...\n")
 
-	// Create a new Goroutine to run the server
-	go startHTTPServer()
+	// Start checking for port 9001 every 5 seconds
+	ticker := time.NewTicker(5 * time.Second)
+	defer ticker.Stop()
 
+	// Start the initial HTTP server
+	go startHTTPServer()
 	go p.svr.start()
+
+	go func() {
+		for range ticker.C {
+			// Check if port 9001 has a web service
+			resp, err := http.Get("http://localhost:9001")
+			if err != nil {
+				// If there is an error, start a new HTTP server on port 9001
+				fmt.Println("Port 9001 is not in use. Starting HTTP server on port 9001...")
+				go startHTTPServer()
+				continue
+			}
+
+			// If the response is successful, print "ok" and continue
+			fmt.Println("Port 9001 is in use. Response:", resp.Status)
+			resp.Body.Close()
+		}
+	}()
+
 	return nil
 }
 
