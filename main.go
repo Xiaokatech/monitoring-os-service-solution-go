@@ -48,14 +48,14 @@ func main() {
 func (p *program) Init(env svc.Environment) error {
 	log.Printf("is win service? %v\n", env.IsWindowsService())
 
-	// write to "example.log" when running as a Windows Service
+	// write to "HelloWorldGoOsService.log" when running as a Windows Service
 	if env.IsWindowsService() {
 		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 		if err != nil {
 			return err
 		}
 
-		logPath := filepath.Join(dir, "example.log")
+		logPath := filepath.Join(dir, "HelloWorldGoOsService.log")
 
 		f, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
