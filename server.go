@@ -29,7 +29,7 @@ func (s *server) stop() error {
 }
 
 func (s *server) startSender() {
-	ticker := time.NewTicker(20 * time.Millisecond)
+	ticker := time.NewTicker(1 * time.Second)
 	defer s.wg.Done()
 	count := 1
 	for {
