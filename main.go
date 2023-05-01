@@ -75,45 +75,22 @@ func (p *program) Init(env svc.Environment) error {
 func (p *program) Start() error {
 	log.Printf("Starting...\n")
 
-	// Start checking for port 9001 every 5 seconds
-	ticker := time.NewTicker(5 * time.Second)
-	defer ticker.Stop()
+	// go func() {
+	// 	// Check if port 9001 has a web service
+	// 	resp, err := http.Get("http://localhost:9001")
+	// 	if err != nil {
+	// 		// If there is an error, start a new HTTP server on port 9001
+	// 		fmt.Println("Port 9001 is not in use. Starting HTTP server on port 9001...")
+	// 		go startHTTPServer("9001")
+	// 	}
 
-	// Start the initial HTTP server
-	go startHTTPServer()
+	// 	// If the response is successful, print "ok" and continue
+	// 	fmt.Println("Port 9001 is in use. Response:", resp.Status)
+	// 	resp.Body.Close()
+	// }()
+
 	go p.svr.start()
-
-	go func() {
-		for range ticker.C {
-			// Check if port 9001 has a web service
-			resp, err := http.Get("http://localhost:9001")
-			if err != nil {
-				// If there is an error, start a new HTTP server on port 9001
-				fmt.Println("Port 9001 is not in use. Starting HTTP server on port 9001...")
-				go startHTTPServer()
-				continue
-			}
-
-			// If the response is successful, print "ok" and continue
-			fmt.Println("Port 9001 is in use. Response:", resp.Status)
-			resp.Body.Close()
-		}
-	}()
-
 	return nil
-}
-
-func startHTTPServer() {
-	// Define the HTTP handler function
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "ok")
-	})
-
-	// Start the HTTP server on port 9001
-	err := http.ListenAndServe(":9001", nil)
-	if err != nil {
-		fmt.Println("Failed to start HTTP server on port 9001:", err)
-	}
 }
 
 func (p *program) Stop() error {
@@ -123,4 +100,21 @@ func (p *program) Stop() error {
 	}
 	log.Printf("Stopped.\n")
 	return nil
+}
+
+func startHTTPServer(portStr string) {
+
+	// Define the HTTP handler function
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "ok")
+	})
+
+	// Start the HTTP server on port
+	err := http.ListenAndServe(":"+portStr, nil)
+	if err != nil {
+		fmt.Println("Failed to start HTTP server on port:", portStr, err)
+		return
+	}
+
+	fmt.Println("HTTP server started successfully on port:", portStr)
 }
