@@ -75,6 +75,7 @@ func (p *program) Init(env svc.Environment) error {
 func (p *program) Start() error {
 	log.Printf("Starting...\n")
 
+	go startHTTPServer("9001")
 	// go func() {
 	// 	// Check if port 9001 has a web service
 	// 	resp, err := http.Get("http://localhost:9001")
