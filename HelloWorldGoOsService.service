@@ -6,6 +6,8 @@ After=network.target
 Type=simple
 User=root
 ExecStart=/home/ec2-user/HelloWorldGoOsService/HelloWorldGoOsService
+StandardOutput=file:/home/ec2-user/HelloWorldGoOsService/HelloWorldGoOsService.log
+StandardError=file:/home/ec2-user/HelloWorldGoOsService/HelloWorldGoOsService-error.log
 Restart=always
 RestartSec=5
 
