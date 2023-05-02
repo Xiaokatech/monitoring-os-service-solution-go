@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -27,6 +28,7 @@ func (p *program) Init(env svc.Environment) error {
 		}
 
 		logPath := filepath.Join(dir, "HelloWorldGoOsService.log")
+		log.Println("logPath", logPath)
 
 		f, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
@@ -54,7 +56,8 @@ func (p *program) Start() error {
 		for {
 			select {
 			case <-ticker.C:
-				log.Println("Hello, World!")
+				fmt.Println("Hello, World! by fmt") // stdout
+				log.Println("Hello, World! by log") // stderr
 			case <-p.quit:
 				return
 			}
