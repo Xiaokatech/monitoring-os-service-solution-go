@@ -1,0 +1,13 @@
+[Unit]
+Description=HelloWorldGoOsService
+After=network.target
+
+[HelloWorldGoOsService]
+Type=simple
+User=root
+ExecStart=/Users/jieanyang/Documents/freelancer_work/ansys/HelloWorldGoOsService/HelloWorldGoOsService
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
