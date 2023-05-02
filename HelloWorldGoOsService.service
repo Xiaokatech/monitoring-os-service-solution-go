@@ -2,7 +2,7 @@
 Description=HelloWorldGoOsService
 After=network.target
 
-[HelloWorldGoOsService]
+[service]
 Type=simple
 User=root
 ExecStart=/Users/jieanyang/Documents/freelancer_work/ansys/HelloWorldGoOsService/HelloWorldGoOsService
