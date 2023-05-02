@@ -1,5 +1,5 @@
 [Unit]
-Description=My Service
+Description=HelloWorldGoOsService
 After=network.target
 
 [Service]
