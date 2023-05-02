@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -22,8 +23,7 @@ func (p *program) Init(env svc.Environment) error {
 	// Check env and open log file for linux and windows
 
 	// write to "HelloWorldGoOsService.log" when running as a Windows Service
-	// or when running as a Linux Daemon
-	if true || env.IsWindowsService() {
+	if env.IsWindowsService() {
 		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 		if err != nil {
 			return err
@@ -58,7 +58,8 @@ func (p *program) Start() error {
 		for {
 			select {
 			case <-ticker.C:
-				log.Println("Hello, World!")
+				fmt.Println("Hello, World! by fmt")
+				log.Println("Hello, World! by log")
 			case <-p.quit:
 				return
 			}
