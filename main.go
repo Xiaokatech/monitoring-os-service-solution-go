@@ -1,54 +1,23 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/judwhite/go-svc"
 )
 
-// implements svc.Service
 type program struct {
 	LogFile *os.File
-	svr     *server
-	ctx     context.Context
-}
-
-func (p *program) Context() context.Context {
-	return p.ctx
-}
-
-func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
-	defer cancel()
-
-	prg := program{
-		svr: &server{},
-		ctx: ctx,
-	}
-
-	defer func() {
-		if prg.LogFile != nil {
-			if closeErr := prg.LogFile.Close(); closeErr != nil {
-				log.Printf("error closing '%s': %v\n", prg.LogFile.Name(), closeErr)
-			}
-		}
-	}()
-
-	// call svc.Run to start your program/service
-	// svc.Run will call Init, Start, and Stop
-	if err := svc.Run(&prg); err != nil {
-		log.Fatal(err)
-	}
+	wg      sync.WaitGroup
+	quit    chan struct{}
 }
 
 func (p *program) Init(env svc.Environment) error {
-	log.Printf("is win service? %v\n", env.IsWindowsService())
+	log.Printf("is win service? %v", env.IsWindowsService())
 
 	// write to "HelloWorldGoOsService.log" when running as a Windows Service
 	if env.IsWindowsService() {
@@ -73,49 +42,38 @@ func (p *program) Init(env svc.Environment) error {
 }
 
 func (p *program) Start() error {
-	log.Printf("Starting...\n")
+	p.quit = make(chan struct{})
 
-	go startHTTPServer("9001")
-	// go func() {
-	// 	// Check if port 9001 has a web service
-	// 	resp, err := http.Get("http://localhost:9001")
-	// 	if err != nil {
-	// 		// If there is an error, start a new HTTP server on port 9001
-	// 		fmt.Println("Port 9001 is not in use. Starting HTTP server on port 9001...")
-	// 		go startHTTPServer("9001")
-	// 	}
+	p.wg.Add(1)
+	go func() {
+		defer p.wg.Done()
 
-	// 	// If the response is successful, print "ok" and continue
-	// 	fmt.Println("Port 9001 is in use. Response:", resp.Status)
-	// 	resp.Body.Close()
-	// }()
+		ticker := time.NewTicker(2 * time.Second)
+		defer ticker.Stop()
 
-	go p.svr.start()
+		for {
+			select {
+			case <-ticker.C:
+				log.Println("Hello, World!")
+			case <-p.quit:
+				return
+			}
+		}
+	}()
+
 	return nil
 }
 
 func (p *program) Stop() error {
-	log.Printf("Stopping...\n")
-	if err := p.svr.stop(); err != nil {
-		return err
-	}
-	log.Printf("Stopped.\n")
+	close(p.quit)
+	p.wg.Wait()
 	return nil
 }
 
-func startHTTPServer(portStr string) {
+func main() {
+	prg := &program{}
 
-	// Define the HTTP handler function
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "ok")
-	})
-
-	// Start the HTTP server on port
-	err := http.ListenAndServe(":"+portStr, nil)
-	if err != nil {
-		fmt.Println("Failed to start HTTP server on port:", portStr, err)
-		return
+	if err := svc.Run(prg); err != nil {
+		log.Fatal(err)
 	}
-
-	fmt.Println("HTTP server started successfully on port:", portStr)
 }
