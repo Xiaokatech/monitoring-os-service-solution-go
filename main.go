@@ -58,8 +58,8 @@ func (p *program) Start() error {
 		for {
 			select {
 			case <-ticker.C:
-				fmt.Println("Hello, World! by fmt")
-				log.Println("Hello, World! by log")
+				fmt.Println("Hello, World! by fmt") // stdout
+				log.Println("Hello, World! by log") // stderr
 			case <-p.quit:
 				return
 			}
