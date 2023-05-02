@@ -36,6 +36,23 @@ func (p *program) Init(env svc.Environment) error {
 		p.LogFile = f
 
 		log.SetOutput(f)
+	} else {
+		// All env except Windows Service
+		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+		if err != nil {
+			return err
+		}
+
+		logPath := filepath.Join(dir, "HelloWorldGoOsService.log")
+
+		f, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		if err != nil {
+			return err
+		}
+
+		p.LogFile = f
+
+		log.SetOutput(f)
 	}
 
 	return nil
