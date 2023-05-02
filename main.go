@@ -22,7 +22,8 @@ func (p *program) Init(env svc.Environment) error {
 	// Check env and open log file for linux and windows
 
 	// write to "HelloWorldGoOsService.log" when running as a Windows Service
-	if env.IsWindowsService() {
+	// or when running as a Linux Daemon
+	if true || env.IsWindowsService() {
 		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 		if err != nil {
 			return err
@@ -38,9 +39,6 @@ func (p *program) Init(env svc.Environment) error {
 		p.LogFile = f
 
 		log.SetOutput(f)
-	} else {
-		// Need to create a log in linux
-
 	}
 
 	return nil
