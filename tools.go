@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 )
 
 func RunAgentBinaryFile() (int, error) {
@@ -14,7 +15,17 @@ func RunAgentBinaryFile() (int, error) {
 		return 0, err
 	}
 
-	binaryFilePath := filepath.Join(dir, "HelloWorldGoAgent_binary_build")
+	binaryFileName := ""
+	switch runtime.GOOS {
+	case "linux":
+		binaryFileName = "HelloWorldGoAgent_binary_build"
+	case "windows":
+		binaryFileName = "HelloWorldGoAgent_binary_build.exe"
+	default:
+		fmt.Println("Unsupported operating system")
+		os.Exit(1)
+	}
+	binaryFilePath := filepath.Join(dir, binaryFileName)
 	log.Println("logPath", binaryFilePath)
 
 	// Set the path to your binary file
