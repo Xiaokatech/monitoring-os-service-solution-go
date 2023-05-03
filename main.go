@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"sync"
@@ -58,11 +59,35 @@ func (p *program) Start() error {
 			case <-ticker.C:
 				fmt.Println("Hello, World! by fmt") // stdout
 				log.Println("Hello, World! by log") // stderr
+
+				client := &http.Client{
+					Timeout: time.Second * 5, // set a timeout of 5 seconds
+				}
+
+				resp, err := client.Get("http://localhost:9001")
+				if err != nil {
+					fmt.Printf("Error making request: %s\n", err.Error())
+
+					if pid, err := RunAgentBinaryFile(); pid != 0 && err == nil {
+						fmt.Println("RunAgentBinaryFile is ok on pid", pid)
+					} else if err != nil {
+						fmt.Printf("Error running binary file: %s\n", err.Error())
+					}
+
+					continue // continue loop instead of exiting
+					// return // exit goroutine
+				}
+
+				defer resp.Body.Close()
+
+				fmt.Printf("Response status: %d\n", resp.StatusCode)
 			case <-p.quit:
 				return
 			}
 		}
 	}()
+
+	fmt.Println("the start func will end")
 
 	return nil
 }
