@@ -5,9 +5,9 @@ After=network.target
 [Service]
 Type=simple
 User=root
-ExecStart=/home/ec2-user/HelloWorldGoOsService/HelloWorldGoOsService
-StandardOutput=file:/home/ec2-user/HelloWorldGoOsService/HelloWorldGoOsService.log
-StandardError=file:/home/ec2-user/HelloWorldGoOsService/HelloWorldGoOsService-error.log
+ExecStart=/usr/local/go/agentOsService/HelloWorldGoOsService
+StandardOutput=file:/usr/local/go/agentOsService/HelloWorldGoOsService.log
+StandardError=file:/usr/local/go/agentOsService/HelloWorldGoOsService-error.log
 Restart=always
 RestartSec=5
 
