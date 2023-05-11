@@ -23,14 +23,14 @@ type program struct {
 func (p *program) Init(env svc.Environment) error {
 	log.Printf("is win service? %v", env.IsWindowsService())
 
-	// write to "HelloWorldGoOsService.log" when running as a Windows Service
+	// write to "HelloWorldGoOsServiceApp.log" when running as a Windows Service
 	if env.IsWindowsService() {
 		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 		if err != nil {
 			return err
 		}
 
-		logPath := filepath.Join(dir, "HelloWorldGoOsService.log")
+		logPath := filepath.Join(dir, "HelloWorldGoOsServiceApp.log")
 		log.Println("logPath", logPath)
 
 		f, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -117,9 +117,9 @@ func RunAgentBinaryFile() (int, error) {
 	binaryFileName := ""
 	switch runtime.GOOS {
 	case "linux":
-		binaryFileName = "HelloWorldGoAgent_binary_build"
+		binaryFileName = "helloWorldGoAgentApp"
 	case "windows":
-		binaryFileName = "HelloWorldGoAgent_binary_build.exe"
+		binaryFileName = "helloWorldGoAgentApp.exe"
 	default:
 		fmt.Println("Unsupported operating system")
 		os.Exit(1)
