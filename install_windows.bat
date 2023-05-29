@@ -6,7 +6,7 @@ if not exist ansysCSPAgentManagerServiceApp.exe (
     goto :exit
 )
 
-sc create go-svc-AnsysCSPAgentManagerService binpath= "C:\go\agentOsService\ansysCSPAgentManagerServiceApp.exe" start= auto DisplayName= "go-svc-AnsysCSPAgentManagerService"
+sc create go-svc-AnsysCSPAgentManagerService binpath= "C:\go\ansysCSPAgentManagerService\ansysCSPAgentManagerServiceApp.exe" start= auto DisplayName= "go-svc-AnsysCSPAgentManagerService"
 sc description go-svc-AnsysCSPAgentManagerService "go-svc-AnsysCSPAgentManagerService"
 net start go-svc-AnsysCSPAgentManagerService
 sc query go-svc-AnsysCSPAgentManagerService
