@@ -117,9 +117,9 @@ func RunAgentBinaryFile() (int, error) {
 	binaryFileName := ""
 	switch runtime.GOOS {
 	case "linux":
-		binaryFileName = "helloWorldGoAgentApp"
+		binaryFileName = "ansysCSPAgentApp"
 	case "windows":
-		binaryFileName = "helloWorldGoAgentApp.exe"
+		binaryFileName = "ansysCSPAgentApp.exe"
 	default:
 		fmt.Println("Unsupported operating system")
 		os.Exit(1)
