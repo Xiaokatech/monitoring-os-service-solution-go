@@ -1,0 +1,15 @@
+[Unit]
+Description=AnsysCSPAgentManagerService
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/go/ansysCSPAgentManagerService/ansysCSPAgentManagerServiceApp
+StandardOutput=file:/usr/local/go/ansysCSPAgentManagerService/ansysCSPAgentManagerServiceApp.log
+StandardError=file:/usr/local/go/ansysCSPAgentManagerService/ansysCSPAgentManagerServiceApp-error.log
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

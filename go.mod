@@ -1,4 +1,4 @@
-module HelloWorldGoOsService
+module AnsysCSPAgentManagerService
 
 go 1.19
 

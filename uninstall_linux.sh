@@ -1,8 +1,8 @@
 #!/bin/bash
 
-sudo systemctl stop HelloWorldGoOsService # Stop the running service
-sudo systemctl disable HelloWorldGoOsService # Disable the service so it doesn't start automatically on system boot
+sudo systemctl stop AnsysCSPAgentManagerService # Stop the running service
+sudo systemctl disable AnsysCSPAgentManagerService # Disable the service so it doesn't start automatically on system boot
 
-sudo rm /etc/systemd/system/HelloWorldGoOsService.service
+sudo rm /etc/systemd/system/AnsysCSPAgentManagerService.service
 
 sudo systemctl daemon-reload # reload the systemd daemon to apply the changes

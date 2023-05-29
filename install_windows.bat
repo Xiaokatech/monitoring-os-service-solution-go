@@ -1,16 +1,16 @@
 @echo off
 rem run this script as admin
 
-if not exist HelloWorldGoOsServiceApp.exe (
-    echo Build the HelloWorldGoOsServiceApp before installing by running "go build"
+if not exist ansysCSPAgentManagerServiceApp.exe (
+    echo Build the ansysCSPAgentManagerServiceApp before installing by running "go build"
     goto :exit
 )
 
-sc create go-svc-HelloWorldGoOsService binpath= "C:\go\agentOsService\HelloWorldGoOsServiceApp.exe" start= auto DisplayName= "go-svc-HelloWorldGoOsService"
-sc description go-svc-HelloWorldGoOsService "go-svc-HelloWorldGoOsService"
-net start go-svc-HelloWorldGoOsService
-sc query go-svc-HelloWorldGoOsService
+sc create go-svc-AnsysCSPAgentManagerService binpath= "C:\go\agentOsService\ansysCSPAgentManagerServiceApp.exe" start= auto DisplayName= "go-svc-AnsysCSPAgentManagerService"
+sc description go-svc-AnsysCSPAgentManagerService "go-svc-AnsysCSPAgentManagerService"
+net start go-svc-AnsysCSPAgentManagerService
+sc query go-svc-AnsysCSPAgentManagerService
 
-echo Check HelloWorldGoOsServiceApp.log
+echo Check ansysCSPAgentManagerServiceApp.log
 
 :exit

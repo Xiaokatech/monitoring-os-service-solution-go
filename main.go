@@ -23,14 +23,14 @@ type program struct {
 func (p *program) Init(env svc.Environment) error {
 	log.Printf("is win service? %v", env.IsWindowsService())
 
-	// write to "HelloWorldGoOsServiceApp.log" when running as a Windows Service
+	// write to "ansysCSPAgentManagerServiceApp.log" when running as a Windows Service
 	if env.IsWindowsService() {
 		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 		if err != nil {
 			return err
 		}
 
-		logPath := filepath.Join(dir, "HelloWorldGoOsServiceApp.log")
+		logPath := filepath.Join(dir, "ansysCSPAgentManagerServiceApp.log")
 		log.Println("logPath", logPath)
 
 		f, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)

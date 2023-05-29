@@ -1,8 +1,8 @@
 #!/bin/bash
 
-sudo cp HelloWorldGoOsService.service /etc/systemd/system/
+sudo cp AnsysCSPAgentManagerService.service /etc/systemd/system/
 
-sudo systemctl enable HelloWorldGoOsService
-sudo systemctl start HelloWorldGoOsService
+sudo systemctl enable AnsysCSPAgentManagerService
+sudo systemctl start AnsysCSPAgentManagerService
 
-sudo systemctl status HelloWorldGoOsService
+sudo systemctl status AnsysCSPAgentManagerService
