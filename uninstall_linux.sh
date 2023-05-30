@@ -1,3 +1,5 @@
+# Copyright (C) 2023 ANSYS, Inc. Unauthorized use, distribution, or duplication is prohibited.
+
 #!/bin/bash
 
 sudo systemctl stop AnsysCSPAgentManagerService # Stop the running service
