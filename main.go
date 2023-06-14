@@ -57,7 +57,7 @@ func (p *program) Start() error {
 	go func() {
 		defer p.wg.Done()
 
-		ticker := time.NewTicker(2 * time.Second)
+		ticker := time.NewTicker(10 * time.Second)
 		defer ticker.Stop()
 
 		for {
