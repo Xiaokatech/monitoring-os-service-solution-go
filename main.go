@@ -85,15 +85,17 @@ func (p *program) Start() error {
 				fmt.Println("Hello, World! by fmt") // stdout
 				log.Println("Hello, World! by log") // stderr
 
-				resp, err := p.CheckAgentRunning()
-				if err != nil {
-					continue // continue loop instead of exiting
-					// return // exit goroutine
-				}
+				// === check if agent is running - start ===
+				// resp, err := p.CheckAgentRunning()
+				// if err != nil {
+				// 	continue // continue loop instead of exiting
+				// 	// return // exit goroutine
+				// }
 
-				defer resp.Body.Close()
+				// defer resp.Body.Close()
 
-				fmt.Printf("Response status: %d\n", resp.StatusCode)
+				// fmt.Printf("Response status: %d\n", resp.StatusCode)
+				// === check if agent is running - end ===
 			case <-p.quit:
 				return
 			}
