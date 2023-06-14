@@ -79,6 +79,8 @@ func (p *program) Start() error {
 		ticker := time.NewTicker(10 * time.Second)
 		defer ticker.Stop()
 
+		p.CheckAgentRunning() // first start for agent
+
 		for {
 			select {
 			case <-ticker.C:
