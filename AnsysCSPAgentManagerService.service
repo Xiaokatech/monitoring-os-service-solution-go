@@ -6,8 +6,8 @@ After=network.target
 Type=simple
 User=root
 ExecStart=/usr/local/go/ansysCSPAgentManagerService/ansysCSPAgentManagerServiceApp
-StandardOutput=file:/usr/local/go/ansysCSPAgentManagerService/ansysCSPAgentManagerServiceApp.log
-StandardError=file:/usr/local/go/ansysCSPAgentManagerService/ansysCSPAgentManagerServiceApp-error.log
+StandardOutput=/usr/local/go/ansysCSPAgentManagerService/ansysCSPAgentManagerServiceApp.log
+StandardError=/usr/local/go/ansysCSPAgentManagerService/ansysCSPAgentManagerServiceApp-error.log
 Restart=always
 RestartSec=5
 
