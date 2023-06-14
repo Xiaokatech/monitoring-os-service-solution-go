@@ -56,6 +56,15 @@ func (p *program) CheckAgentRunning() (*http.Response, error) {
 	}
 
 	resp, err := client.Get("http://localhost:9001")
+	if err != nil {
+		fmt.Printf("Error making request: %s\n", err.Error())
+
+		if pid, err := RunAgentBinaryFile(); pid != 0 && err == nil {
+			fmt.Println("RunAgentBinaryFile is ok on pid", pid)
+		} else if err != nil {
+			fmt.Printf("Error running binary file: %s\n", err.Error())
+		}
+	}
 
 	return resp, err
 }
@@ -76,19 +85,11 @@ func (p *program) Start() error {
 				fmt.Println("Hello, World! by fmt") // stdout
 				log.Println("Hello, World! by log") // stderr
 
-				// resp, err := p.CheckAgentRunning()
-				// if err != nil {
-				// 	fmt.Printf("Error making request: %s\n", err.Error())
-
-				// 	if pid, err := RunAgentBinaryFile(); pid != 0 && err == nil {
-				// 		fmt.Println("RunAgentBinaryFile is ok on pid", pid)
-				// 	} else if err != nil {
-				// 		fmt.Printf("Error running binary file: %s\n", err.Error())
-				// 	}
-
-				// 	continue // continue loop instead of exiting
-				// 	// return // exit goroutine
-				// }
+				resp, err := p.CheckAgentRunning()
+				if err != nil {
+					continue // continue loop instead of exiting
+					// return // exit goroutine
+				}
 
 				defer resp.Body.Close()
 
