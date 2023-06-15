@@ -82,7 +82,7 @@ func WritePidDataToFile(filePath string, pidData *PIDdata) (*PIDdata, error) {
 	}
 
 	// Write the JSON data to the file
-	err = ioutil.WriteFile(filePath, data, 0644)
+	err = ioutil.WriteFile(filePath, data, 0664)
 	if err != nil {
 		return nil, err
 	}
