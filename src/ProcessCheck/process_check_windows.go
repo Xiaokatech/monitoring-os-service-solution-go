@@ -1,6 +1,7 @@
 package ProcessCheck
 
 import (
+	"errors"
 	"golang.org/x/sys/windows"
 )
 
