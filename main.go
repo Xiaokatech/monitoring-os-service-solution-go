@@ -68,7 +68,7 @@ func (p *program) StartNewAgentApp(agentManagerServiceConfigFileLocation string)
 	if pid, err := RunAgentBinaryFile(); pid != 0 && err == nil {
 		fmt.Println("RunAgentBinaryFile is ok on pid", pid)
 		ok, err := TTools.WritePIDToFile(agentManagerServiceConfigFileLocation, pid)
-		fmt.Println("pidData save into pid.json", ok, "for pid:", pid)
+		fmt.Println("pidData save into agent.pid", ok, "for pid:", pid)
 		if err != nil {
 			fmt.Printf("Error writing pid data to file: %s\n", err.Error())
 			// os.Exit(1) //@DEV
@@ -81,7 +81,7 @@ func (p *program) StartNewAgentApp(agentManagerServiceConfigFileLocation string)
 
 func (p *program) CheckAgentRunning(agentManagerServiceConfigFileLocation string) (bool, error) {
 
-	// === Check PID when pid.json exists - start ===
+	// === Check PID when agent.pid exists - start ===
 	pid, err := TTools.ReadPIDFromFile(agentManagerServiceConfigFileLocation)
 	if err != nil {
 		fmt.Printf("Error reading pid data from file: %s\n", err.Error())
@@ -90,7 +90,7 @@ func (p *program) CheckAgentRunning(agentManagerServiceConfigFileLocation string
 	if err != nil {
 		fmt.Printf("Failed to find process: %s\n", err)
 	}
-	// === Check PID when pid.json exists - end ===
+	// === Check PID when agent.pid exists - end ===
 
 	return isProcessExists, err
 }
@@ -99,7 +99,7 @@ func (p *program) Start() error {
 	p.quit = make(chan struct{})
 
 	osServiceManagerAppName := "ansysCSPAgentManagerService"
-	fileName := "pid.json"
+	fileName := "agent.pid"
 
 	// Set the default appData path for Linux, Windows, and macOS systems
 	var agentManagerServiceAppDataPath string = TTools.GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName)
