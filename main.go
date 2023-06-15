@@ -14,6 +14,8 @@ import (
 	"sync"
 	"time"
 
+	TTools "AnsysCSPAgentManagerService/src/tools"
+
 	"github.com/judwhite/go-svc"
 )
 
@@ -52,7 +54,7 @@ func (p *program) Init(env svc.Environment) error {
 func (p *program) StartNewAgentApp(agentManagerServiceConfigFileLocation string) {
 	if pid, err := RunAgentBinaryFile(); pid != 0 && err == nil {
 		fmt.Println("RunAgentBinaryFile is ok on pid", pid)
-		WritePidDataToFile(agentManagerServiceConfigFileLocation, &PIDdata{PID: pid})
+		TTools.WritePidDataToFile(agentManagerServiceConfigFileLocation, &TTools.PIDdata{PID: pid})
 	} else if err != nil {
 		fmt.Printf("Error running binary file: %s\n", err.Error())
 	}
@@ -60,10 +62,10 @@ func (p *program) StartNewAgentApp(agentManagerServiceConfigFileLocation string)
 
 func (p *program) ProcessExists(pid int) (bool, error) {
 	if runtime.GOOS == "windows" {
-		isProcessExists, err := processExists_windows(pid)
+		isProcessExists, err := TTools.ProcessExists_windows(pid)
 		return isProcessExists, err
 	} else if runtime.GOOS == "linux" {
-		isProcessExists, err := processExists_linux(pid)
+		isProcessExists, err := TTools.ProcessExists_linux(pid)
 		return isProcessExists, err
 	}
 
@@ -76,13 +78,12 @@ func (p *program) CheckAgentRunning() (bool, error) {
 	fileName := "pid.json"
 
 	// Set the default appData path for Linux, Windows, and macOS systems
-	var agentManagerServiceAppDataPath string = GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName)
+	var agentManagerServiceAppDataPath string = TTools.GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName)
 	agentManagerServiceConfigFileLocation := filepath.Join(agentManagerServiceAppDataPath, fileName)
 
-	pidData, err := ReadPidDataFromFile(agentManagerServiceConfigFileLocation)
+	pidData, err := TTools.ReadPidDataFromFile(agentManagerServiceConfigFileLocation)
 	if err != nil {
 		fmt.Printf("Error reading pid data from file: %s\n", err.Error())
-
 	}
 
 	// === See pid - start ===

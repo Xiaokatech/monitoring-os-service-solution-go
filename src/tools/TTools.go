@@ -1,4 +1,4 @@
-package main
+package TTools
 
 import (
 	"encoding/json"
@@ -9,12 +9,12 @@ import (
 	"runtime"
 )
 
-func processExists_windows(pid int) (bool, error) {
+func ProcessExists_windows(pid int) (bool, error) {
 	_, err := os.FindProcess(pid)
 	return err == nil, err
 }
 
-func processExists_linux(pid int) (bool, error) {
+func ProcessExists_linux(pid int) (bool, error) {
 	_, err := os.Stat(fmt.Sprintf("/proc/%d", pid))
 	return !os.IsNotExist(err), err
 }
