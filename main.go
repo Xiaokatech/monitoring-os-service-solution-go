@@ -191,12 +191,15 @@ func RunAgentBinaryFile() (int, error) {
 	pid := cmd.Process.Pid
 	fmt.Println("Process started with PID:", pid)
 
-	// * Wait for the process to finish, we don't need to wait for it because we don't want this process to be blocked
-	// if err := cmd.Wait(); err != nil {
-	// 	fmt.Println("Process exited with error:", err)
-	// } else {
-	// 	fmt.Println("Process exited successfully")
-	// }
+	// Use a goroutine to wait for the process to finish so we don't create a zombie process
+	go func() {
+		err := cmd.Wait()
+		if err != nil {
+			fmt.Println("Process exited with error:", err)
+		} else {
+			fmt.Println("Process exited successfully")
+		}
+	}()
 
 	return pid, nil
 }
