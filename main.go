@@ -5,9 +5,7 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -19,47 +17,6 @@ import (
 
 	"github.com/judwhite/go-svc"
 )
-
-func GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName string) string {
-	fmt.Println("GetAnsysCSPAgentManagerServiceAppPathByAppName - start")
-
-	var appDataByAppNamePath string
-	switch runtime.GOOS {
-	case "linux":
-		appDataByAppNamePath = filepath.Join("/usr/local/go", osServiceManagerAppName)
-	case "windows":
-		appDataByAppNamePath = filepath.Join("C:\\go", osServiceManagerAppName)
-	case "darwin":
-		appDataByAppNamePath = filepath.Join(os.Getenv("HOME"), "Library", "Application Support", osServiceManagerAppName)
-	default:
-		fmt.Println("Unsupported operating system")
-		os.Exit(1)
-	}
-
-	fmt.Println("GetAnsysCSPAgentManagerServiceAppPathByAppName:", appDataByAppNamePath)
-
-	return appDataByAppNamePath
-}
-
-type PIDdata struct {
-	PID int `json:"pid"`
-}
-
-func WriteMetadataToFile(filePath string, metadata *PIDdata) (*PIDdata, error) {
-	// Convert the slice of Usser structs to JSON data
-	data, err := json.Marshal(metadata)
-	if err != nil {
-		return nil, err
-	}
-
-	// Write the JSON data to the file
-	err = ioutil.WriteFile(filePath, data, 0644)
-	if err != nil {
-		return nil, err
-	}
-
-	return metadata, nil
-}
 
 type program struct {
 	LogFile *os.File
@@ -98,6 +55,12 @@ func (p *program) CheckAgentRunning() (*http.Response, error) {
 		Timeout: time.Second * 5, // set a timeout of 5 seconds
 	}
 
+	osServiceManagerAppName := "ansysCSPAgentManagerService"
+	fileName := "pid.json"
+
+	// Set the default appData path for Linux, Windows, and macOS systems
+	var agentAppDataPath string = GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName)
+
 	resp, err := client.Get("http://localhost:9001")
 	if err != nil {
 		fmt.Printf("Error making request: %s\n", err.Error())
@@ -105,13 +68,8 @@ func (p *program) CheckAgentRunning() (*http.Response, error) {
 		if pid, err := RunAgentBinaryFile(); pid != 0 && err == nil {
 			fmt.Println("RunAgentBinaryFile is ok on pid", pid)
 
-			osServiceManagerAppName := "ansysCSPAgentManagerService"
-			fileName := "pid.json"
-
-			// Set the default appData path for Linux, Windows, and macOS systems
-			var agentAppDataPath string = GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName)
 			configFileLocation := filepath.Join(agentAppDataPath, fileName)
-			WriteMetadataToFile(configFileLocation, &PIDdata{PID: pid})
+			WritePidDataToFile(configFileLocation, &PIDdata{PID: pid})
 		} else if err != nil {
 			fmt.Printf("Error running binary file: %s\n", err.Error())
 		}
