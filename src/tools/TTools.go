@@ -1,12 +1,12 @@
 package TTools
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"syscall"
 )
 
@@ -57,36 +57,28 @@ func FileExists(filename string) bool {
 	return !os.IsNotExist(err)
 }
 
-func ReadPidDataFromFile(filePath string) (*PIDdata, error) {
-	// Read the contents of the file
-	data, err := ioutil.ReadFile(filePath)
+func ReadPIDFromFile(filepath string) (int, error) {
+	pidBytes, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
-	// Parse the JSON data in to a slice of User structs
-	var pidData *PIDdata
-	err = json.Unmarshal(data, &pidData)
+	pid, err := strconv.Atoi(string(pidBytes))
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
-	return pidData, nil
+	return pid, nil
 }
 
-func WritePidDataToFile(filePath string, pidData *PIDdata) (*PIDdata, error) {
-	// Convert the slice of Usser structs to JSON data
-	data, err := json.Marshal(pidData)
+func WritePIDToFile(filepath string, pid int) (bool, error) {
+	pidBytes := []byte(strconv.Itoa(pid))
+
+	// This function overwrites the existing file or creates a new file
+	err := ioutil.WriteFile(filepath, pidBytes, 0644)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 
-	fmt.Println("WritePidDataToFile:", data)
-	// Write the JSON data to the file
-	err = ioutil.WriteFile(filePath, data, 0644)
-	if err != nil {
-		return nil, err
-	}
-
-	return pidData, nil
+	return true, nil
 }

@@ -67,10 +67,11 @@ func (p *program) StartNewAgentApp(agentManagerServiceConfigFileLocation string)
 	fmt.Println("StartNewAgentApp - start")
 	if pid, err := RunAgentBinaryFile(); pid != 0 && err == nil {
 		fmt.Println("RunAgentBinaryFile is ok on pid", pid)
-		pidData, err := TTools.WritePidDataToFile(agentManagerServiceConfigFileLocation, &TTools.PIDdata{PID: pid})
-		fmt.Println("pidData save into pid.json", pidData)
+		ok, err := TTools.WritePIDToFile(agentManagerServiceConfigFileLocation, pid)
+		fmt.Println("pidData save into pid.json", ok, "for pid:", pid)
 		if err != nil {
 			fmt.Printf("Error writing pid data to file: %s\n", err.Error())
+			// os.Exit(1) //@DEV
 		}
 	} else if err != nil {
 		fmt.Printf("Error running binary file: %s\n", err.Error())
@@ -81,11 +82,11 @@ func (p *program) StartNewAgentApp(agentManagerServiceConfigFileLocation string)
 func (p *program) CheckAgentRunning(agentManagerServiceConfigFileLocation string) (bool, error) {
 
 	// === Check PID when pid.json exists - start ===
-	pidData, err := TTools.ReadPidDataFromFile(agentManagerServiceConfigFileLocation)
+	pid, err := TTools.ReadPIDFromFile(agentManagerServiceConfigFileLocation)
 	if err != nil {
 		fmt.Printf("Error reading pid data from file: %s\n", err.Error())
 	}
-	isProcessExists, err := ProcessExists(pidData.PID)
+	isProcessExists, err := ProcessExists(pid)
 	if err != nil {
 		fmt.Printf("Failed to find process: %s\n", err)
 	}
