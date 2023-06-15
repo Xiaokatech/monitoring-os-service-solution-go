@@ -7,7 +7,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -50,59 +49,52 @@ func (p *program) Init(env svc.Environment) error {
 	return nil
 }
 
-func (p *program) StartNewAgentApp(configFileLocation string) {
+func (p *program) StartNewAgentApp(agentManagerServiceConfigFileLocation string) {
 	if pid, err := RunAgentBinaryFile(); pid != 0 && err == nil {
 		fmt.Println("RunAgentBinaryFile is ok on pid", pid)
-
-		WritePidDataToFile(configFileLocation, &PIDdata{PID: pid})
+		WritePidDataToFile(agentManagerServiceConfigFileLocation, &PIDdata{PID: pid})
 	} else if err != nil {
 		fmt.Printf("Error running binary file: %s\n", err.Error())
 	}
 }
 
-func (p *program) CheckAgentRunning() (*http.Response, error) {
-	client := &http.Client{
-		Timeout: time.Second * 5, // set a timeout of 5 seconds
+func (p *program) ProcessExists(pid int) (bool, error) {
+	if runtime.GOOS == "windows" {
+		isProcessExists, err := processExists_windows(pid)
+		return isProcessExists, err
+	} else if runtime.GOOS == "linux" {
+		isProcessExists, err := processExists_linux(pid)
+		return isProcessExists, err
 	}
+
+	return false, nil
+}
+
+func (p *program) CheckAgentRunning() (bool, error) {
 
 	osServiceManagerAppName := "ansysCSPAgentManagerService"
 	fileName := "pid.json"
 
 	// Set the default appData path for Linux, Windows, and macOS systems
-	var agentAppDataPath string = GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName)
-	configFileLocation := filepath.Join(agentAppDataPath, fileName)
+	var agentManagerServiceAppDataPath string = GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName)
+	agentManagerServiceConfigFileLocation := filepath.Join(agentManagerServiceAppDataPath, fileName)
 
-	_, err := ReadPidDataFromFile(configFileLocation)
+	pidData, err := ReadPidDataFromFile(agentManagerServiceConfigFileLocation)
 	if err != nil {
 		fmt.Printf("Error reading pid data from file: %s\n", err.Error())
 
 	}
 
 	// === See pid - start ===
-	// process, err := os.FindProcess(pidData.PID)
-	// if err != nil {
-	// 	fmt.Printf("Failed to find process: %s\n", err)
-	// 	fmt.Println("Starting new agent...")
-
-	// } else {
-	// 	err := process.Signal(syscall.Signal(0))
-	// 	if err != nil {
-	// 		fmt.Println("process does not exist")
-	// 	} else {
-	// 		fmt.Println("process exists")
-	// 	}
-	// }
+	isProcessExists, err := p.ProcessExists(pidData.PID)
+	if err != nil {
+		fmt.Printf("Failed to find process: %s\n", err)
+		fmt.Println("Starting new agent...")
+		p.StartNewAgentApp(agentManagerServiceConfigFileLocation)
+	}
 	// === See pid - end ===
 
-	// === request localhost:9001 - start ===
-	resp, err := client.Get("http://localhost:9001")
-	if err != nil {
-		fmt.Printf("Error making request: %s\n", err.Error())
-		p.StartNewAgentApp(configFileLocation)
-	}
-	// === request localhost:9001 - end ===
-
-	return resp, err
+	return isProcessExists, err
 }
 
 func (p *program) Start() error {

@@ -9,6 +9,16 @@ import (
 	"runtime"
 )
 
+func processExists_windows(pid int) (bool, error) {
+	_, err := os.FindProcess(pid)
+	return err == nil, err
+}
+
+func processExists_linux(pid int) (bool, error) {
+	_, err := os.Stat(fmt.Sprintf("/proc/%d", pid))
+	return !os.IsNotExist(err), err
+}
+
 type PIDdata struct {
 	PID int `json:"pid"`
 }
