@@ -93,6 +93,8 @@ func (p *program) CheckAgentRunning() (bool, error) {
 		fmt.Printf("Error reading pid data from file: %s\n", err.Error())
 	}
 	isProcessExists, err := ProcessExists(pidData.PID)
+	fmt.Println("isProcessExists yang", isProcessExists)
+	fmt.Println("err", err)
 	if err != nil {
 		fmt.Printf("Failed to find process: %s\n", err)
 		fmt.Println("Starting new agent...")
