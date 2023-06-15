@@ -87,6 +87,8 @@ func (p *program) CheckAgentRunning() (bool, error) {
 		return false, nil
 	}
 
+	fmt.Println("pid.json File exists")
+
 	// === Check PID when pid.json exists - start ===
 	pidData, err := TTools.ReadPidDataFromFile(agentManagerServiceConfigFileLocation)
 	if err != nil {
