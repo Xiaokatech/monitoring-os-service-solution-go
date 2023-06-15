@@ -25,6 +25,18 @@ type program struct {
 	quit    chan struct{}
 }
 
+func ProcessExists(pid int) (bool, error) {
+	if runtime.GOOS == "windows" {
+		isProcessExists, err := TTools.ProcessExists_windows(pid)
+		return isProcessExists, err
+	} else if runtime.GOOS == "linux" {
+		isProcessExists, err := TTools.ProcessExists_linux(pid)
+		return isProcessExists, err
+	}
+
+	return false, nil
+}
+
 func (p *program) Init(env svc.Environment) error {
 	log.Printf("is win service? %v", env.IsWindowsService())
 
@@ -60,18 +72,6 @@ func (p *program) StartNewAgentApp(agentManagerServiceConfigFileLocation string)
 	}
 }
 
-func (p *program) ProcessExists(pid int) (bool, error) {
-	if runtime.GOOS == "windows" {
-		isProcessExists, err := TTools.ProcessExists_windows(pid)
-		return isProcessExists, err
-	} else if runtime.GOOS == "linux" {
-		isProcessExists, err := TTools.ProcessExists_linux(pid)
-		return isProcessExists, err
-	}
-
-	return false, nil
-}
-
 func (p *program) CheckAgentRunning() (bool, error) {
 
 	osServiceManagerAppName := "ansysCSPAgentManagerService"
@@ -92,7 +92,7 @@ func (p *program) CheckAgentRunning() (bool, error) {
 	if err != nil {
 		fmt.Printf("Error reading pid data from file: %s\n", err.Error())
 	}
-	isProcessExists, err := p.ProcessExists(pidData.PID)
+	isProcessExists, err := ProcessExists(pidData.PID)
 	if err != nil {
 		fmt.Printf("Failed to find process: %s\n", err)
 		fmt.Println("Starting new agent...")
@@ -122,15 +122,8 @@ func (p *program) Start() error {
 				log.Println("Hello, World! by log") // stderr
 
 				// === check if agent is running - start ===
-				// resp, err := p.CheckAgentRunning()
-				// if err != nil {
-				// 	continue // continue loop instead of exiting
-				// 	// return // exit goroutine
-				// }
+				p.CheckAgentRunning()
 
-				// defer resp.Body.Close()
-
-				// fmt.Printf("Response status: %d\n", resp.StatusCode)
 				// === check if agent is running - end ===
 			case <-p.quit:
 				return
