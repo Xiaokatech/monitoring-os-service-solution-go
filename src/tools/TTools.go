@@ -27,10 +27,6 @@ func ProcessExists_linux(pid int) (bool, error) {
 
 }
 
-type PIDdata struct {
-	PID int `json:"pid"`
-}
-
 func GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName string) string {
 	fmt.Println("GetAnsysCSPAgentManagerServiceAppPathByAppName - start")
 

@@ -69,7 +69,7 @@ func (p *program) StartNewAgentApp(agentManagerServiceConfigFileLocation string)
 		fmt.Println("RunAgentBinaryFile is ok on pid", pid)
 		fmt.Println("agentManagerServiceConfigFileLocation", agentManagerServiceConfigFileLocation)
 		ok, err := TTools.WritePIDToFile(agentManagerServiceConfigFileLocation, pid)
-		fmt.Println("pidData save into agent.pid", ok, "for pid:", pid)
+		fmt.Println("Save PID into agent.pid", ok, "for pid:", pid)
 		if err != nil {
 			fmt.Printf("Error writing pid data to file: %s\n", err.Error())
 			// os.Exit(1) //@DEV
