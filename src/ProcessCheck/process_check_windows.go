@@ -1,15 +1,23 @@
 package ProcessCheck
 
-import "os"
+import (
+	"golang.org/x/sys/windows"
+)
 
 type ProcessCheckerWindows struct{}
 
 func (p ProcessCheckerWindows) ProcessExists(pid int) (bool, error) {
-	_, err := os.FindProcess(pid)
+	h, err := windows.OpenProcess(windows.PROCESS_QUERY_LIMITED_INFORMATION, false, uint32(pid))
 	if err != nil {
-		return false, nil
+		if err == windows.ERROR_INVALID_PARAMETER {
+			return false, errors.New("The process does not exist")
+		}
+		return false, err
 	}
-	return true, nil
+	// Close the process handle to avoid a leak
+	windows.CloseHandle(h)
+
+	return true, err
 }
 
 func NewProcessChecker() ProcessChecker {
