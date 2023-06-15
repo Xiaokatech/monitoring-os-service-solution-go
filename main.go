@@ -50,6 +50,16 @@ func (p *program) Init(env svc.Environment) error {
 	return nil
 }
 
+func (p *program) StartNewAgentApp(configFileLocation string) {
+	if pid, err := RunAgentBinaryFile(); pid != 0 && err == nil {
+		fmt.Println("RunAgentBinaryFile is ok on pid", pid)
+
+		WritePidDataToFile(configFileLocation, &PIDdata{PID: pid})
+	} else if err != nil {
+		fmt.Printf("Error running binary file: %s\n", err.Error())
+	}
+}
+
 func (p *program) CheckAgentRunning() (*http.Response, error) {
 	client := &http.Client{
 		Timeout: time.Second * 5, // set a timeout of 5 seconds
@@ -60,20 +70,37 @@ func (p *program) CheckAgentRunning() (*http.Response, error) {
 
 	// Set the default appData path for Linux, Windows, and macOS systems
 	var agentAppDataPath string = GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName)
+	configFileLocation := filepath.Join(agentAppDataPath, fileName)
 
+	_, err := ReadPidDataFromFile(configFileLocation)
+	if err != nil {
+		fmt.Printf("Error reading pid data from file: %s\n", err.Error())
+
+	}
+
+	// === See pid - start ===
+	// process, err := os.FindProcess(pidData.PID)
+	// if err != nil {
+	// 	fmt.Printf("Failed to find process: %s\n", err)
+	// 	fmt.Println("Starting new agent...")
+
+	// } else {
+	// 	err := process.Signal(syscall.Signal(0))
+	// 	if err != nil {
+	// 		fmt.Println("process does not exist")
+	// 	} else {
+	// 		fmt.Println("process exists")
+	// 	}
+	// }
+	// === See pid - end ===
+
+	// === request localhost:9001 - start ===
 	resp, err := client.Get("http://localhost:9001")
 	if err != nil {
 		fmt.Printf("Error making request: %s\n", err.Error())
-
-		if pid, err := RunAgentBinaryFile(); pid != 0 && err == nil {
-			fmt.Println("RunAgentBinaryFile is ok on pid", pid)
-
-			configFileLocation := filepath.Join(agentAppDataPath, fileName)
-			WritePidDataToFile(configFileLocation, &PIDdata{PID: pid})
-		} else if err != nil {
-			fmt.Printf("Error running binary file: %s\n", err.Error())
-		}
+		p.StartNewAgentApp(configFileLocation)
 	}
+	// === request localhost:9001 - end ===
 
 	return resp, err
 }
