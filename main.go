@@ -81,19 +81,24 @@ func (p *program) CheckAgentRunning() (bool, error) {
 	var agentManagerServiceAppDataPath string = TTools.GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName)
 	agentManagerServiceConfigFileLocation := filepath.Join(agentManagerServiceAppDataPath, fileName)
 
+	if !TTools.FileExists(agentManagerServiceConfigFileLocation) {
+		fmt.Println("File does not exist")
+		p.StartNewAgentApp(agentManagerServiceConfigFileLocation)
+		return false, nil
+	}
+
+	// === Check PID when pid.json exists - start ===
 	pidData, err := TTools.ReadPidDataFromFile(agentManagerServiceConfigFileLocation)
 	if err != nil {
 		fmt.Printf("Error reading pid data from file: %s\n", err.Error())
 	}
-
-	// === See pid - start ===
 	isProcessExists, err := p.ProcessExists(pidData.PID)
 	if err != nil {
 		fmt.Printf("Failed to find process: %s\n", err)
 		fmt.Println("Starting new agent...")
 		p.StartNewAgentApp(agentManagerServiceConfigFileLocation)
 	}
-	// === See pid - end ===
+	// === Check PID when pid.json exists - end ===
 
 	return isProcessExists, err
 }

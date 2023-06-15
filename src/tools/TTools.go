@@ -44,6 +44,11 @@ func GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName stri
 	return appDataByAppNamePath
 }
 
+func FileExists(filename string) bool {
+	_, err := os.Stat(filename)
+	return !os.IsNotExist(err)
+}
+
 func ReadPidDataFromFile(filePath string) (*PIDdata, error) {
 	// Read the contents of the file
 	data, err := ioutil.ReadFile(filePath)
