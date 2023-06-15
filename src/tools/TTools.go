@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"syscall"
 )
 
 func ProcessExists_windows(pid int) (bool, error) {
@@ -15,8 +16,15 @@ func ProcessExists_windows(pid int) (bool, error) {
 }
 
 func ProcessExists_linux(pid int) (bool, error) {
-	_, err := os.Stat(fmt.Sprintf("/proc/%d", pid))
-	return !os.IsNotExist(err), err
+	err := syscall.Kill(pid, 0)
+	if err == nil {
+		return true, err
+	}
+	if err == syscall.ESRCH {
+		return false, err
+	}
+	return false, nil
+
 }
 
 type PIDdata struct {
