@@ -50,6 +50,25 @@ func (p *program) Init(env svc.Environment) error {
 	return nil
 }
 
+func (p *program) CheckAgentRunning() (*http.Response, error) {
+	client := &http.Client{
+		Timeout: time.Second * 5, // set a timeout of 5 seconds
+	}
+
+	resp, err := client.Get("http://localhost:9001")
+	if err != nil {
+		fmt.Printf("Error making request: %s\n", err.Error())
+
+		if pid, err := RunAgentBinaryFile(); pid != 0 && err == nil {
+			fmt.Println("RunAgentBinaryFile is ok on pid", pid)
+		} else if err != nil {
+			fmt.Printf("Error running binary file: %s\n", err.Error())
+		}
+	}
+
+	return resp, err
+}
+
 func (p *program) Start() error {
 	p.quit = make(chan struct{})
 
@@ -57,8 +76,10 @@ func (p *program) Start() error {
 	go func() {
 		defer p.wg.Done()
 
-		ticker := time.NewTicker(2 * time.Second)
+		ticker := time.NewTicker(10 * time.Second)
 		defer ticker.Stop()
+
+		p.CheckAgentRunning() // first start for agent
 
 		for {
 			select {
@@ -66,27 +87,17 @@ func (p *program) Start() error {
 				fmt.Println("Hello, World! by fmt") // stdout
 				log.Println("Hello, World! by log") // stderr
 
-				client := &http.Client{
-					Timeout: time.Second * 5, // set a timeout of 5 seconds
-				}
+				// === check if agent is running - start ===
+				// resp, err := p.CheckAgentRunning()
+				// if err != nil {
+				// 	continue // continue loop instead of exiting
+				// 	// return // exit goroutine
+				// }
 
-				resp, err := client.Get("http://localhost:9001")
-				if err != nil {
-					fmt.Printf("Error making request: %s\n", err.Error())
+				// defer resp.Body.Close()
 
-					if pid, err := RunAgentBinaryFile(); pid != 0 && err == nil {
-						fmt.Println("RunAgentBinaryFile is ok on pid", pid)
-					} else if err != nil {
-						fmt.Printf("Error running binary file: %s\n", err.Error())
-					}
-
-					continue // continue loop instead of exiting
-					// return // exit goroutine
-				}
-
-				defer resp.Body.Close()
-
-				fmt.Printf("Response status: %d\n", resp.StatusCode)
+				// fmt.Printf("Response status: %d\n", resp.StatusCode)
+				// === check if agent is running - end ===
 			case <-p.quit:
 				return
 			}
