@@ -99,7 +99,7 @@ func (p *program) Start() error {
 	p.quit = make(chan struct{})
 
 	osServiceManagerAppName := "ansysCSPAgentManagerService"
-	fileName := "agent.pid"
+	fileName := "agent-test.pid"
 
 	// Set the default appData path for Linux, Windows, and macOS systems
 	var agentManagerServiceAppDataPath string = TTools.GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName)
