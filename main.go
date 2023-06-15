@@ -64,12 +64,14 @@ func (p *program) Init(env svc.Environment) error {
 }
 
 func (p *program) StartNewAgentApp(agentManagerServiceConfigFileLocation string) {
+	fmt.Println("StartNewAgentApp - start")
 	if pid, err := RunAgentBinaryFile(); pid != 0 && err == nil {
 		fmt.Println("RunAgentBinaryFile is ok on pid", pid)
 		TTools.WritePidDataToFile(agentManagerServiceConfigFileLocation, &TTools.PIDdata{PID: pid})
 	} else if err != nil {
 		fmt.Printf("Error running binary file: %s\n", err.Error())
 	}
+	fmt.Println("StartNewAgentApp - end")
 }
 
 func (p *program) CheckAgentRunning(agentManagerServiceConfigFileLocation string) (bool, error) {
@@ -106,10 +108,11 @@ func (p *program) Start() error {
 		defer ticker.Stop()
 
 		// first start for agent
-		if !TTools.FileExists(agentManagerServiceConfigFileLocation) {
-			fmt.Println("File does not exist")
-			p.StartNewAgentApp(agentManagerServiceConfigFileLocation)
-		}
+		// @TEST
+		// if !TTools.FileExists(agentManagerServiceConfigFileLocation) {
+		// 	fmt.Println("File does not exist")
+		// 	p.StartNewAgentApp(agentManagerServiceConfigFileLocation)
+		// }
 
 		for {
 			select {
