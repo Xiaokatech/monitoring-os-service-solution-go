@@ -72,22 +72,7 @@ func (p *program) StartNewAgentApp(agentManagerServiceConfigFileLocation string)
 	}
 }
 
-func (p *program) CheckAgentRunning() (bool, error) {
-
-	osServiceManagerAppName := "ansysCSPAgentManagerService"
-	fileName := "pid.json"
-
-	// Set the default appData path for Linux, Windows, and macOS systems
-	var agentManagerServiceAppDataPath string = TTools.GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName)
-	agentManagerServiceConfigFileLocation := filepath.Join(agentManagerServiceAppDataPath, fileName)
-
-	if !TTools.FileExists(agentManagerServiceConfigFileLocation) {
-		fmt.Println("File does not exist")
-		p.StartNewAgentApp(agentManagerServiceConfigFileLocation)
-		return false, nil
-	}
-
-	fmt.Println("pid.json File exists")
+func (p *program) CheckAgentRunning(agentManagerServiceConfigFileLocation string) (bool, error) {
 
 	// === Check PID when pid.json exists - start ===
 	pidData, err := TTools.ReadPidDataFromFile(agentManagerServiceConfigFileLocation)
@@ -95,12 +80,8 @@ func (p *program) CheckAgentRunning() (bool, error) {
 		fmt.Printf("Error reading pid data from file: %s\n", err.Error())
 	}
 	isProcessExists, err := ProcessExists(pidData.PID)
-	fmt.Println("isProcessExists yang", isProcessExists)
-	fmt.Println("err", err)
 	if err != nil {
 		fmt.Printf("Failed to find process: %s\n", err)
-		fmt.Println("Starting new agent...")
-		p.StartNewAgentApp(agentManagerServiceConfigFileLocation)
 	}
 	// === Check PID when pid.json exists - end ===
 
@@ -110,6 +91,13 @@ func (p *program) CheckAgentRunning() (bool, error) {
 func (p *program) Start() error {
 	p.quit = make(chan struct{})
 
+	osServiceManagerAppName := "ansysCSPAgentManagerService"
+	fileName := "pid.json"
+
+	// Set the default appData path for Linux, Windows, and macOS systems
+	var agentManagerServiceAppDataPath string = TTools.GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName)
+	agentManagerServiceConfigFileLocation := filepath.Join(agentManagerServiceAppDataPath, fileName)
+
 	p.wg.Add(1)
 	go func() {
 		defer p.wg.Done()
@@ -117,7 +105,11 @@ func (p *program) Start() error {
 		ticker := time.NewTicker(10 * time.Second)
 		defer ticker.Stop()
 
-		p.CheckAgentRunning() // first start for agent
+		// first start for agent
+		if !TTools.FileExists(agentManagerServiceConfigFileLocation) {
+			fmt.Println("File does not exist")
+			p.StartNewAgentApp(agentManagerServiceConfigFileLocation)
+		}
 
 		for {
 			select {
@@ -126,8 +118,12 @@ func (p *program) Start() error {
 				log.Println("Hello, World! by log") // stderr
 
 				// === check if agent is running - start ===
-				p.CheckAgentRunning()
-
+				isAgentProcessExists, err := p.CheckAgentRunning(agentManagerServiceConfigFileLocation)
+				fmt.Println("isAgentProcessExists yang", isAgentProcessExists)
+				if err != nil || !isAgentProcessExists {
+					fmt.Printf("Failed to find process: %s\n", err)
+					p.StartNewAgentApp(agentManagerServiceConfigFileLocation)
+				}
 				// === check if agent is running - end ===
 			case <-p.quit:
 				return
