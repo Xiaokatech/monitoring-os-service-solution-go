@@ -67,7 +67,11 @@ func (p *program) StartNewAgentApp(agentManagerServiceConfigFileLocation string)
 	fmt.Println("StartNewAgentApp - start")
 	if pid, err := RunAgentBinaryFile(); pid != 0 && err == nil {
 		fmt.Println("RunAgentBinaryFile is ok on pid", pid)
-		TTools.WritePidDataToFile(agentManagerServiceConfigFileLocation, &TTools.PIDdata{PID: pid})
+		pidData, err := TTools.WritePidDataToFile(agentManagerServiceConfigFileLocation, &TTools.PIDdata{PID: pid})
+		fmt.Println("pidData save into pid.json", pidData)
+		if err != nil {
+			fmt.Printf("Error writing pid data to file: %s\n", err.Error())
+		}
 	} else if err != nil {
 		fmt.Printf("Error running binary file: %s\n", err.Error())
 	}
