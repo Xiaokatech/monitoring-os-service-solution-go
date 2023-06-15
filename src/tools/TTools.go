@@ -9,34 +9,6 @@ import (
 	"strconv"
 )
 
-// func ProcessExists_windows(pid int) (bool, error) {
-// 	_, err := os.FindProcess(pid)
-// 	return err == nil, err
-// }
-
-// func ProcessExists_linux(pid int) (bool, error) {
-// 	err := syscall.Kill(pid, 0)
-// 	if err == nil {
-// 		return true, err
-// 	}
-// 	if err == syscall.ESRCH {
-// 		return false, err
-// 	}
-// 	return false, nil
-// }
-
-// func ProcessExists(pid int) (bool, error) {
-// 	if runtime.GOOS == "windows" {
-// 		isProcessExists, err := ProcessExists_windows(pid)
-// 		return isProcessExists, err
-// 	} else if runtime.GOOS == "linux" {
-// 		isProcessExists, err := ProcessExists_linux(pid)
-// 		return isProcessExists, err
-// 	}
-
-// 	return false, nil
-// }
-
 func GetAnsysCSPAgentManagerServiceAppPathByAppName(osServiceManagerAppName string) string {
 	fmt.Println("GetAnsysCSPAgentManagerServiceAppPathByAppName - start")
 
