@@ -1,6 +1,3 @@
-//go:build windows
-// +build windows
-
 package ProcessCheck
 
 import "os"
@@ -13,4 +10,8 @@ func (p ProcessCheckerWindows) ProcessExists(pid int) (bool, error) {
 		return false, nil
 	}
 	return true, nil
+}
+
+func NewProcessChecker() ProcessChecker {
+	return ProcessCheckerWindows{}
 }

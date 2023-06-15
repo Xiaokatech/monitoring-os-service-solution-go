@@ -2,9 +2,9 @@ package ProcessCheck
 
 import "syscall"
 
-type ProcessCheckerLinux struct{}
+type ProcessCheckerDarwin struct{}
 
-func (p ProcessCheckerLinux) ProcessExists(pid int) (bool, error) {
+func (p ProcessCheckerDarwin) ProcessExists(pid int) (bool, error) {
 	err := syscall.Kill(pid, 0)
 	if err == nil {
 		return true, nil
@@ -16,5 +16,5 @@ func (p ProcessCheckerLinux) ProcessExists(pid int) (bool, error) {
 }
 
 func NewProcessChecker() ProcessChecker {
-	return ProcessCheckerLinux{}
+	return ProcessCheckerDarwin{}
 }

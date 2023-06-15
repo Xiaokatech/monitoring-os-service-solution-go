@@ -100,9 +100,11 @@ func (p *program) Start() error {
 
 	switch runtime.GOOS {
 	case "windows":
-		checker = ProcessCheck.ProcessCheckerWindows{}
+		checker = ProcessCheck.NewProcessChecker()
 	case "linux":
-		checker = ProcessCheck.ProcessCheckerLinux{}
+		checker = ProcessCheck.NewProcessChecker()
+	case "darwin":
+		checker = ProcessCheck.NewProcessChecker()
 	default:
 		fmt.Printf("Unsupported operating system: %s", runtime.GOOS)
 		os.Exit(1)
