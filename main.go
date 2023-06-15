@@ -113,11 +113,10 @@ func (p *program) Start() error {
 		defer ticker.Stop()
 
 		// first start for agent
-		// @TEST
-		// if !TTools.FileExists(agentManagerServiceConfigFileLocation) {
-		// 	fmt.Println("File does not exist")
-		// 	p.StartNewAgentApp(agentManagerServiceConfigFileLocation)
-		// }
+		if !TTools.FileExists(agentManagerServiceConfigFileLocation) {
+			fmt.Println("File does not exist")
+			p.StartNewAgentApp(agentManagerServiceConfigFileLocation)
+		}
 
 		for {
 			select {
