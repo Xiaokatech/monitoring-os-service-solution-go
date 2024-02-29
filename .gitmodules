@@ -1,0 +1,3 @@
+[submodule "monitoring-agent-solution-go"]
+	path = monitoring-agent-solution-go
+	url = https://github.com/Xiaokatech/monitoring-agent-solution-go.git
